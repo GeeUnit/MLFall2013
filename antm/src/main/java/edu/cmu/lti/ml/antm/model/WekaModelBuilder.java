@@ -17,7 +17,7 @@ public class WekaModelBuilder {
 	private static String BASELINE_CLASSIFIER="weka.classifiers.bayes.NaiveBayes";
 
 	
-	public void getBestModel(String[] modelClassNames, TestPair dataSet) throws Exception
+	public double getBestModelError(String[] modelClassNames, TestPair dataSet) throws Exception
 	{
 		Classifier baselineModel=trainModel(BASELINE_CLASSIFIER, dataSet.getTrainFilePath());
 		double baselineAccuracy=testModel(baselineModel, dataSet.getTestFilePath());
@@ -42,6 +42,8 @@ public class WekaModelBuilder {
 		
 		System.out.println("Best model was: "+bestModel.getClass().getName()+" with error: "+bestErrorRatio);
 		this.outputModel(bestModel, dataSet.getDescription());
+		
+		return bestErrorRatio;
 	}
 	
 	/**
@@ -129,15 +131,19 @@ public class WekaModelBuilder {
 											 new TestPair("hepatitis","datasets/hepatitis_train.arff", "datasets/hepatitis_test.arff"),
 											 new TestPair("hypothyroid","datasets/hypothyroid_train.arff", "datasets/hypothyroid_test.arff")};
 		
+		double currentError, sumOfErrors=0.D, maxError=0.D;
+		
 		for(int i=0; i<dataSets.length; i++){
 			System.out.println("\nDataSet "+(i+1)+"/"+dataSets.length+": "+dataSets[i].getDescription());
 			WekaModelBuilder wmb=new WekaModelBuilder();
-			wmb.getBestModel(classifiers, dataSets[i]);
+			currentError = wmb.getBestModelError(classifiers, dataSets[i]);
+			sumOfErrors += currentError;
+			maxError = maxError<currentError ? currentError : maxError; 
 		}
 		
+		System.out.println("\n average error ratio: " + (sumOfErrors/(double)dataSets.length));
+		System.out.println("\n max error ratio: " + maxError);
 		
-		//WekaModelBuilder wmb=new WekaModelBuilder();
-		//wmb.getBestModel(new String[]{"weka.classifiers.trees.RandomForest", "weka.classifiers.lazy.LWL", "weka.classifiers.meta.LogitBoost" }, new TestPair("anneal","datasets/anneal_train.arff", "datasets/anneal_test.arff"));
 	}
 
 }
