@@ -41,6 +41,7 @@ public class WekaModelBuilder {
 		}
 		
 		System.out.println("Best model was: "+bestModel.getClass().getName()+" with error: "+bestErrorRatio);
+		this.outptuModel(bestModel, dataSet.getDescription());
 	}
 	
 	/**
@@ -110,7 +111,7 @@ public class WekaModelBuilder {
 	
 	public static void main(String[] args) throws Exception {
 		WekaModelBuilder wmb=new WekaModelBuilder();
-		wmb.getBestModel(new String[]{"weka.classifiers.trees.RandomForest", "weka.classifiers.lazy.LWL", "weka.classifiers.meta.LogitBoost" }, new TestPair("datasets/anneal_train.arff", "datasets/anneal_test.arff"));
+		wmb.getBestModel(new String[]{"weka.classifiers.trees.RandomForest", "weka.classifiers.lazy.LWL", "weka.classifiers.meta.LogitBoost" }, new TestPair("anneal","datasets/anneal_train.arff", "datasets/anneal_test.arff"));
 	}
 
 }
