@@ -23,7 +23,7 @@ public class WekaModelBuilder {
 		double baselineAccuracy=testModel(baselineModel, dataSet.getTestFilePath());
 		
 		//minimize error ratio
-		double bestErrorRatio=1D;
+		double bestErrorRatio=Double.MAX_VALUE;
 		Classifier bestModel=baselineModel;
 		
 		for(String classifierName:modelClassNames)
