@@ -41,7 +41,7 @@ public class WekaModelBuilder {
 		}
 		
 		System.out.println("Best model was: "+bestModel.getClass().getName()+" with error: "+bestErrorRatio);
-		this.outptuModel(bestModel, dataSet.getDescription());
+		this.outputModel(bestModel, dataSet.getDescription());
 	}
 	
 	/**
@@ -87,7 +87,8 @@ public class WekaModelBuilder {
 		int count=0;
 		while((current=testLoader.getNextInstance(testInstances))!=null)
 		{
-			if(testInstances.attribute(38).value((int)model.classifyInstance(current)).equals(current.stringValue(38)))
+			int AttIdx = testInstances.numAttributes()-1;
+			if(testInstances.attribute(AttIdx).value((int)model.classifyInstance(current)).equals(current.stringValue(AttIdx)))
 			{
 				correct++;
 			}
@@ -104,14 +105,39 @@ public class WekaModelBuilder {
 	 * @param outputPath
 	 * @throws Exception
 	 */
-	public void outptuModel(Classifier model, String outputPath) throws Exception
+	public void outputModel(Classifier model, String outputPath) throws Exception
 	{
 		SerializationHelper.write(outputPath, model);
 	}
 	
 	public static void main(String[] args) throws Exception {
-		WekaModelBuilder wmb=new WekaModelBuilder();
-		wmb.getBestModel(new String[]{"weka.classifiers.trees.RandomForest", "weka.classifiers.lazy.LWL", "weka.classifiers.meta.LogitBoost" }, new TestPair("anneal","datasets/anneal_train.arff", "datasets/anneal_test.arff"));
+		
+		String[] classifiers = new String[]{"weka.classifiers.trees.RandomForest", 
+											"weka.classifiers.lazy.LWL",
+											"weka.classifiers.meta.LogitBoost"};
+		
+		TestPair[] dataSets = new TestPair[]{new TestPair("anneal","datasets/anneal_train.arff", "datasets/anneal_test.arff"),
+											 new TestPair("audiology","datasets/audiology_train.arff", "datasets/audiology_test.arff"),
+											 new TestPair("autos","datasets/autos_train.arff", "datasets/autos_test.arff"),
+											 new TestPair("balance-scale","datasets/balance-scale_train.arff", "datasets/balance-scale_test.arff"),
+											 new TestPair("breast-cancer","datasets/breast-cancer_train.arff", "datasets/breast-cancer_test.arff"),
+											 new TestPair("colic","datasets/colic_train.arff", "datasets/colic_test.arff"),
+											 new TestPair("credit-a","datasets/credit-a_train.arff", "datasets/credit-a_test.arff"),
+											 new TestPair("diabetes","datasets/diabetes_train.arff", "datasets/diabetes_test.arff"),
+											 new TestPair("glass","datasets/glass_train.arff", "datasets/glass_test.arff"),
+											 new TestPair("heart-c","datasets/heart-c_train.arff", "datasets/heart-c_test.arff"),
+											 new TestPair("hepatitis","datasets/hepatitis_train.arff", "datasets/hepatitis_test.arff"),
+											 new TestPair("hypothyroid","datasets/hypothyroid_train.arff", "datasets/hypothyroid_test.arff")};
+		
+		for(int i=0; i<dataSets.length; i++){
+			System.out.println("\nDataSet "+(i+1)+"/"+dataSets.length+": "+dataSets[i].getDescription());
+			WekaModelBuilder wmb=new WekaModelBuilder();
+			wmb.getBestModel(classifiers, dataSets[i]);
+		}
+		
+		
+		//WekaModelBuilder wmb=new WekaModelBuilder();
+		//wmb.getBestModel(new String[]{"weka.classifiers.trees.RandomForest", "weka.classifiers.lazy.LWL", "weka.classifiers.meta.LogitBoost" }, new TestPair("anneal","datasets/anneal_train.arff", "datasets/anneal_test.arff"));
 	}
 
 }
