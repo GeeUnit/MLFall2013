@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 import edu.cmu.lti.ml.antm.data.TestPair;
 import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
@@ -19,21 +20,28 @@ public class WekaModelBuilder {
 	
 	public double getBestModelError(String[] modelClassNames, TestPair dataSet) throws Exception
 	{
-		Classifier baselineModel=trainModel(BASELINE_CLASSIFIER, dataSet.getTrainFilePath());
-		double baselineAccuracy=testModel(baselineModel, dataSet.getTestFilePath());
+		//Classifier baselineModel=trainModel(BASELINE_CLASSIFIER, dataSet.getTrainFilePath());
+
+		double baselineError=calculateErrorForModel(BASELINE_CLASSIFIER, dataSet.getTrainFilePath(), dataSet.getTestFilePath());
+		System.out.println("be: " + baselineError);
 		
 		//minimize error ratio
 		double bestErrorRatio=Double.MAX_VALUE;
-		Classifier bestModel=baselineModel;
+		Classifier bestModel=null;
 		
 		for(String classifierName:modelClassNames)
 		{
+			/*
 			Classifier model=trainModel(classifierName, dataSet.getTrainFilePath());
 			double accuracy=testModel(model, dataSet.getTestFilePath());
 			double errorRatio=(1-accuracy)/(1-baselineAccuracy);
+			*/
+			
+			double errorRatio = calculateErrorForModel(classifierName, dataSet.getTrainFilePath(), dataSet.getTestFilePath())/baselineError;
 			
 			if(errorRatio<bestErrorRatio)
 			{
+				Classifier model=trainModel(classifierName, dataSet.getTrainFilePath());
 				bestErrorRatio=errorRatio;
 				bestModel=model;
 			}	
@@ -41,7 +49,7 @@ public class WekaModelBuilder {
 		}
 		
 		System.out.println("Best model was: "+bestModel.getClass().getName()+" with error: "+bestErrorRatio);
-		this.outputModel(bestModel, dataSet.getDescription());
+		this.outputModel(bestModel, dataSet.getDescription()+".model");
 		
 		return bestErrorRatio;
 	}
@@ -80,6 +88,7 @@ public class WekaModelBuilder {
 		ArffLoader testLoader=new ArffLoader();
 		URL url=WekaModelBuilder.class.getClassLoader().getResource(testSet);
 		testLoader.setURL(url.toString());
+		
 		Instances testInstances=testLoader.getStructure();
 		testInstances.setClassIndex(testInstances.numAttributes()-1);
 		
@@ -100,6 +109,37 @@ public class WekaModelBuilder {
 		double accuracy=correct/(double)count;
 		return accuracy;
 	}
+
+	
+	/*
+	 * Also computes error, but now using errorRate()
+	 * 
+	 */
+	public double calculateErrorForModel(String classifierName, String trainPath, String testPath) throws Exception
+    {
+           Classifier model=Classifier.forName(classifierName, null);
+          
+           URL url=WekaModelBuilder.class.getClassLoader().getResource(trainPath);
+           DataSource trainSource = new DataSource(url.getFile());
+   
+           Instances trainInstances=trainSource.getDataSet();
+           trainInstances.setClassIndex(trainInstances.numAttributes()-1);
+          
+           model.buildClassifier(trainInstances);
+   
+           url=WekaModelBuilder.class.getClassLoader().getResource(testPath);
+           DataSource testSource = new DataSource(url.getFile());
+   
+           Instances testInstances=testSource.getDataSet();
+           testInstances.setClassIndex(testInstances.numAttributes()-1);
+          
+          
+           Evaluation eval=new Evaluation(trainInstances);
+          
+           eval.evaluateModel(model, testInstances);
+   
+           return eval.errorRate();
+    }
 	
 	/**
 	 * Serialize the model
