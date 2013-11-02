@@ -18,7 +18,7 @@ public class WekaModelBuilder {
 	private static String BASELINE_CLASSIFIER="weka.classifiers.bayes.NaiveBayes";
 
 	
-	public double getBestModelError(String[] modelClassNames, TestPair dataSet) throws Exception
+	public static double getBestModelError(String[] modelClassNames, TestPair dataSet) throws Exception
 	{
 		//Classifier baselineModel=trainModel(BASELINE_CLASSIFIER, dataSet.getTrainFilePath());
 
@@ -49,7 +49,7 @@ public class WekaModelBuilder {
 		}
 		
 		System.out.println("Best model was: "+bestModel.getClass().getName()+" with error: "+bestErrorRatio);
-		this.outputModel(bestModel, dataSet.getDescription()+".model");
+		outputModel(bestModel, dataSet.getDescription()+".model");
 		
 		return bestErrorRatio;
 	}
@@ -61,7 +61,7 @@ public class WekaModelBuilder {
 	 * @return
 	 * @throws Exception
 	 */
-	public Classifier trainModel(String modelClassName, String trainSet) throws Exception
+	public static Classifier trainModel(String modelClassName, String trainSet) throws Exception
 	{
 		URL url=WekaModelBuilder.class.getClassLoader().getResource(trainSet);
 		DataSource source = new DataSource(url.getFile());
@@ -83,7 +83,7 @@ public class WekaModelBuilder {
 	 * @throws IOException
 	 * @throws Exception
 	 */
-	public double testModel(Classifier model, String testSet) throws IOException, Exception
+	public static double testModel(Classifier model, String testSet) throws IOException, Exception
 	{
 		ArffLoader testLoader=new ArffLoader();
 		URL url=WekaModelBuilder.class.getClassLoader().getResource(testSet);
@@ -115,9 +115,9 @@ public class WekaModelBuilder {
 	 * Also computes error, but now using errorRate()
 	 * 
 	 */
-	public double calculateErrorForModel(String classifierName, String trainPath, String testPath, String[] Options) throws Exception
+	public static double calculateErrorForModel(String classifierName, String trainPath, String testPath, String[] Options) throws Exception
     {
-           Classifier model=Classifier.forName(classifierName, null);
+           Classifier model=Classifier.forName(classifierName, Options);
            
           
            URL url=WekaModelBuilder.class.getClassLoader().getResource(trainPath);
@@ -142,11 +142,116 @@ public class WekaModelBuilder {
            return eval.errorRate();
     }
 	
-	//Version withou options
-	public double calculateErrorForModel(String classifierName, String trainPath, String testPath) throws Exception
+	//Version without options
+	public static double calculateErrorForModel(String classifierName, String trainPath, String testPath) throws Exception
     {
            return calculateErrorForModel(classifierName, trainPath, testPath, null);
     }
+	
+	/*
+	 * Runs the train/test for a given classifier with a range of options
+	 * and returns the best set of parameters
+	 * */
+	public String[] getBestOptionsForClassifier(String classifierName, TestPair pair, String[] param, int[] initVal, int[] endVal, int[] step) throws Exception{
+		assert (param.length == initVal.length);
+		assert (param.length == endVal.length);
+		assert (param.length == step.length);
+		
+		String trainPath = pair.getTrainFilePath();
+		String testPath = pair.getTestFilePath();
+		
+		int totalParams = param.length;
+		String[] bestOptions = new String[2*totalParams];
+		
+		for(int i=0; i<totalParams; i++){
+			double currentError = Double.MAX_VALUE;
+			double lowestError = Double.MAX_VALUE;
+			int currentOptValue = initVal[i];
+			String[] currentOptions = new String[2*(i+1)];
+			for(int k=0; k<(i+1)*2; k++){
+				currentOptions[k] = bestOptions[k];
+			}
+			currentOptions[2*i] = param[i];
+			
+			while(currentOptValue <= endVal[i]){
+				currentOptions[2*i + 1] = String.valueOf(currentOptValue);
+				currentError = calculateErrorForModel(classifierName, trainPath, testPath, currentOptions.clone());
+				
+				//System.out.print("currentOptions: ");
+				for(String s : currentOptions){System.out.print(s+" ");};
+				System.out.println(": " + currentError);
+				
+				if(lowestError > currentError){
+					lowestError = currentError;
+					bestOptions[2*i] = param[i];
+					bestOptions[2*i+1] = String.valueOf(currentOptValue);
+				}
+				currentOptValue += step[i];
+			}
+		}
+		
+		System.out.println("Best parameters for "+classifierName+":");
+		for(int i=0; i<bestOptions.length; i+=2){
+			System.out.println(bestOptions[i]+": "+bestOptions[i+1]);
+		}
+		
+		return bestOptions;
+	}
+		
+		/*
+		 * Runs the train/test for a given classifier with a range of options
+		 * and returns the best set of parameters
+		 * */
+	public static String[] getBestOptionsForClassifierForAllDatasets(String classifierName, TestPair[] testPair, String[] param, int[] initVal, int[] endVal, int[] step) throws Exception{
+		assert (param.length == initVal.length);
+		assert (param.length == endVal.length);
+		assert (param.length == step.length);
+		
+		String trainPath, testPath;
+		
+		int totalParams = param.length;
+		String[] bestOptions = new String[2*totalParams];
+		
+		for(int i=0; i<totalParams; i++){
+			double lowestAvgError = Double.MAX_VALUE;
+			int currentOptValue = initVal[i];
+			String[] currentOptions = new String[2*(i+1)];
+			for(int k=0; k<(i+1)*2; k++){
+				currentOptions[k] = bestOptions[k];
+			}
+			currentOptions[2*i] = param[i];
+			
+			while(currentOptValue <= endVal[i]){
+				currentOptions[2*i + 1] = String.valueOf(currentOptValue);
+				double currentAvgError = 0.d;
+				for(int c=0; c<testPair.length; c++){
+					trainPath = testPair[c].getTrainFilePath();
+					testPath = testPair[c].getTestFilePath();
+					currentAvgError += calculateErrorForModel(classifierName, trainPath, testPath, currentOptions.clone());
+				}
+				currentAvgError /= testPair.length;
+				
+				//System.out.print("currentOptions: ");
+				for(String s : currentOptions){System.out.print(s+" ");};
+				System.out.println(": " + currentAvgError);
+				
+				if(lowestAvgError > currentAvgError){
+					lowestAvgError = currentAvgError;
+					bestOptions[2*i] = param[i];
+					bestOptions[2*i+1] = String.valueOf(currentOptValue);
+				}
+				currentOptValue += step[i];
+			}
+		}
+		
+		System.out.println("Best parameters for "+classifierName+":");
+		for(int i=0; i<bestOptions.length; i+=2){
+			System.out.println(bestOptions[i]+": "+bestOptions[i+1]);
+		}
+		
+		return bestOptions;
+	}
+	
 	
 	/**
 	 * Serialize the model
@@ -154,12 +259,13 @@ public class WekaModelBuilder {
 	 * @param outputPath
 	 * @throws Exception
 	 */
-	public void outputModel(Classifier model, String outputPath) throws Exception
+	public static void outputModel(Classifier model, String outputPath) throws Exception
 	{
 		SerializationHelper.write(outputPath, model);
 	}
 	
 	public static void main(String[] args) throws Exception {
+		
 		
 		String[] classifiers = new String[]{"weka.classifiers.trees.RandomForest", 
 											"weka.classifiers.lazy.LWL",
@@ -178,6 +284,20 @@ public class WekaModelBuilder {
 											 new TestPair("hepatitis","datasets/hepatitis_train.arff", "datasets/hepatitis_test.arff"),
 											 new TestPair("hypothyroid","datasets/hypothyroid_train.arff", "datasets/hypothyroid_test.arff")};
 		
+		String classifierName = classifiers[0];
+		String[] param = new String[]{"-I", "-K", "-depth"};
+		int[] initVal = new int[]{10, 6, 5};
+		int[] endVal = new int[]{100, 38, 20};
+		int[] step= new int[]{5, 2, 1};
+		
+		//String[] bestOpts = wmb.getBestOptionsForClassifier(classifierName, dataSets[0], param, initVal, endVal, step);
+		
+		//String[] bestOpts = getBestOptionsForClassifierForAllDatasets(classifierName, dataSets, param, initVal, endVal, step);
+		
+		RFTuner rf = new RFTuner();
+		rf.getTunedModel(dataSets);
+		
+		/*
 		double currentError, sumOfErrors=0.D, maxError=0.D;
 		
 		for(int i=0; i<dataSets.length; i++){
@@ -190,6 +310,10 @@ public class WekaModelBuilder {
 		
 		System.out.println("\n average error ratio: " + (sumOfErrors/(double)dataSets.length));
 		System.out.println("\n max error ratio: " + maxError);
+		
+		*/
+		
+		
 		
 	}
 
