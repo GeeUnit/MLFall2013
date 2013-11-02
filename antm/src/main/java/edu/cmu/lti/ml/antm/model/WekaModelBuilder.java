@@ -115,9 +115,10 @@ public class WekaModelBuilder {
 	 * Also computes error, but now using errorRate()
 	 * 
 	 */
-	public double calculateErrorForModel(String classifierName, String trainPath, String testPath) throws Exception
+	public double calculateErrorForModel(String classifierName, String trainPath, String testPath, String[] Options) throws Exception
     {
            Classifier model=Classifier.forName(classifierName, null);
+           
           
            URL url=WekaModelBuilder.class.getClassLoader().getResource(trainPath);
            DataSource trainSource = new DataSource(url.getFile());
@@ -139,6 +140,12 @@ public class WekaModelBuilder {
            eval.evaluateModel(model, testInstances);
    
            return eval.errorRate();
+    }
+	
+	//Version withou options
+	public double calculateErrorForModel(String classifierName, String trainPath, String testPath) throws Exception
+    {
+           return calculateErrorForModel(classifierName, trainPath, testPath, null);
     }
 	
 	/**
