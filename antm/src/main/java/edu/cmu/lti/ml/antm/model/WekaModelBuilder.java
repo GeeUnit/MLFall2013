@@ -3,6 +3,8 @@ package edu.cmu.lti.ml.antm.model;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.PriorityQueue;
+
 import edu.cmu.lti.ml.antm.data.TestPair;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
@@ -284,19 +286,8 @@ public class WekaModelBuilder {
 											 new TestPair("hepatitis","datasets/hepatitis_train.arff", "datasets/hepatitis_test.arff"),
 											 new TestPair("hypothyroid","datasets/hypothyroid_train.arff", "datasets/hypothyroid_test.arff")};
 		
-		String classifierName = classifiers[0];
-		String[] param = new String[]{"-I", "-K", "-depth"};
-		int[] initVal = new int[]{10, 6, 5};
-		int[] endVal = new int[]{100, 38, 20};
-		int[] step= new int[]{5, 2, 1};
 		
-		//String[] bestOpts = wmb.getBestOptionsForClassifier(classifierName, dataSets[0], param, initVal, endVal, step);
-		
-		//String[] bestOpts = getBestOptionsForClassifierForAllDatasets(classifierName, dataSets, param, initVal, endVal, step);
-		
-		RFTuner rf = new RFTuner();
-		rf.getTunedModel(dataSets);
-		
+		/* ------------ MILESTONE 2 ------------- */
 		/*
 		double currentError, sumOfErrors=0.D, maxError=0.D;
 		
@@ -310,9 +301,22 @@ public class WekaModelBuilder {
 		
 		System.out.println("\n average error ratio: " + (sumOfErrors/(double)dataSets.length));
 		System.out.println("\n max error ratio: " + maxError);
-		
 		*/
 		
+		
+		/* ------------ MILESTONE 3 ------------- */
+		
+		PriorityQueue<tunedClassifierInfo> tunedClassifiers = new PriorityQueue<tunedClassifierInfo>();
+		
+		//Classifier 1: Random Forest
+		RFTuner rf = new RFTuner();
+		tunedClassifierInfo rfModel = rf.getTunedModel(dataSets);
+		tunedClassifiers.add(rfModel);
+		
+		//Classifier 2: Random Forest
+		LWLTuner lwl = new LWLTuner();
+		tunedClassifierInfo lwlModel = lwl.getTunedModel(dataSets);
+		tunedClassifiers.add(lwlModel);
 		
 		
 	}

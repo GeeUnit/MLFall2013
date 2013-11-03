@@ -1,21 +1,17 @@
 package edu.cmu.lti.ml.antm.model;
 
-import java.net.URL;
-
-import weka.core.Instances;
-import weka.core.converters.ArffLoader;
+import weka.classifiers.Classifier;
 import edu.cmu.lti.ml.antm.data.TestPair;
 
-public class RFTuner implements ModelTuner {
-	private final String classifierName = "weka.classifiers.trees.RandomForest";
-	//values for -K will be treated as the % of numAttributes (1->10%, 2->20%, ...)
-	private final String[] param = new String[]{"-I", "-K", "-depth"};
-	private final int[] initVal = new int[]{50, 1, 3};
-	private final int[] endVal = new int[]{150, 10, 30};
-	private final int[] step = new int[]{5, 1, 2};
+public class LWLTuner implements ModelTuner {
+
+	private final String classifierName = "weka.classifiers.lazy.LWL";
+	private final String[] param = new String[]{"-K", "-U"};
+	private final int[] initVal = new int[]{-1, 0};
+	private final int[] endVal = new int[]{80, 4};
+	private final int[] step = new int[]{3, 1};
 	
-	
-	public RFTuner(){
+	public LWLTuner(){
 		assert (param.length == initVal.length);
 		assert (param.length == endVal.length);
 		assert (param.length == step.length);
@@ -27,7 +23,7 @@ public class RFTuner implements ModelTuner {
 		
 		int totalParams = param.length;
 		String[] bestOptions = new String[2*totalParams];
-		double lowestAvgError = Double.MAX_VALUE ;
+		double lowestAvgError = Double.MAX_VALUE;
 		
 		for(int i=0; i<totalParams; i++){
 			int currentOptValue = initVal[i];
@@ -46,18 +42,7 @@ public class RFTuner implements ModelTuner {
 				double sumOfError = 0.d;
 				
 				for(int c=0; c<testPair.length; c++){
-					
-					//adjust parameter value for data-dependent parameters
 					String[] currentOptionsClone = currentOptions.clone();
-					if(i>=1){ // is using -K
-						ArffLoader testLoader=new ArffLoader();
-						URL url=WekaModelBuilder.class.getClassLoader().getResource(testPair[c].getTestFilePath());
-						testLoader.setURL(url.toString());
-						Instances testInstances=testLoader.getStructure();
-						int adjustedValue = (int)(Double.parseDouble(currentOptionsClone[3]) * (0.1d * (double)testInstances.numAttributes()));
-						currentOptionsClone[3] = String.valueOf(adjustedValue); 
-					}
-					
 					trainPath = testPair[c].getTrainFilePath();
 					testPath = testPair[c].getTestFilePath();
 					sumOfError += WekaModelBuilder.calculateErrorForModel(classifierName, trainPath, testPath, currentOptionsClone);
@@ -72,16 +57,19 @@ public class RFTuner implements ModelTuner {
 					bestOptions[2*i] = param[i];
 					bestOptions[2*i+1] = String.valueOf(currentOptValue);
 				}
+				
 				currentOptValue += step[i];
 			}
 		}
 		
-		System.out.println("Best parameters for Random Forest: ");
+		System.out.println("Best parameters for LWL: ");
 		for(int i=0; i<bestOptions.length; i+=2){
 			System.out.println(bestOptions[i]+": "+bestOptions[i+1]);
 		}
 		
 		return new tunedClassifierInfo(this.classifierName, lowestAvgError, bestOptions);
 	}
+
+
 
 }
