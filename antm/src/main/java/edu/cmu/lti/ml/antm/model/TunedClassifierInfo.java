@@ -1,12 +1,12 @@
 package edu.cmu.lti.ml.antm.model;
 
-public class tunedClassifierInfo implements Comparable<tunedClassifierInfo> {
+public class TunedClassifierInfo implements Comparable<TunedClassifierInfo> {
 	
 	private String classifierName;
 	private Double avgError;
 	private String[] tunedOptions;
 	
-	public tunedClassifierInfo(String classifierName, Double avgError, String[] tunedOptions){
+	public TunedClassifierInfo(String classifierName, Double avgError, String[] tunedOptions){
 		this.classifierName = classifierName;
 		this.avgError = avgError;
 		this.tunedOptions = tunedOptions;
@@ -24,7 +24,7 @@ public class tunedClassifierInfo implements Comparable<tunedClassifierInfo> {
 		return this.tunedOptions;
 	}
 
-	public int compareTo(tunedClassifierInfo o) {
+	public int compareTo(TunedClassifierInfo o) {
 		return Double.compare(this.avgError, o.avgError);
 	}
 	

@@ -306,16 +306,16 @@ public class WekaModelBuilder {
 		
 		/* ------------ MILESTONE 3 ------------- */
 		
-		PriorityQueue<tunedClassifierInfo> tunedClassifiers = new PriorityQueue<tunedClassifierInfo>();
+		PriorityQueue<TunedClassifierInfo> tunedClassifiers = new PriorityQueue<TunedClassifierInfo>();
 		
 		//Classifier 1: Random Forest
 		RFTuner rf = new RFTuner();
-		tunedClassifierInfo rfModel = rf.getTunedModel(dataSets);
+		TunedClassifierInfo rfModel = rf.getTunedModel(dataSets);
 		tunedClassifiers.add(rfModel);
 		
 		//Classifier 2: Random Forest
 		LWLTuner lwl = new LWLTuner();
-		tunedClassifierInfo lwlModel = lwl.getTunedModel(dataSets);
+		TunedClassifierInfo lwlModel = lwl.getTunedModel(dataSets);
 		tunedClassifiers.add(lwlModel);
 		
 		

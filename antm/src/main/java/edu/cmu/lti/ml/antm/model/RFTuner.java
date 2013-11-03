@@ -21,7 +21,7 @@ public class RFTuner implements ModelTuner {
 		assert (param.length == step.length);
 	};
 
-	public tunedClassifierInfo getTunedModel(TestPair[] testPair) throws Exception {
+	public TunedClassifierInfo getTunedModel(TestPair[] testPair) throws Exception {
 		
 		String trainPath, testPath;
 		
@@ -81,7 +81,7 @@ public class RFTuner implements ModelTuner {
 			System.out.println(bestOptions[i]+": "+bestOptions[i+1]);
 		}
 		
-		return new tunedClassifierInfo(this.classifierName, lowestAvgError, bestOptions);
+		return new TunedClassifierInfo(this.classifierName, lowestAvgError, bestOptions);
 	}
 
 }
