@@ -1,15 +1,19 @@
 package edu.cmu.lti.ml.antm.model;
 
+import java.net.URL;
+
 import weka.classifiers.Classifier;
+import weka.core.Instances;
+import weka.core.converters.ArffLoader;
 import edu.cmu.lti.ml.antm.data.TestPair;
 
 public class RFTuner implements ModelTuner {
-	
 	private final String classifierName = "weka.classifiers.trees.RandomForest";
+	//values for -K will be treated as the % of numAttributes (1->10%, 2->20%, ...)
 	private final String[] param = new String[]{"-I", "-K", "-depth"};
-	private final int[] initVal = new int[]{10, 6, 5};
-	private final int[] endVal = new int[]{100, 38, 20};
-	private final int[] step = new int[]{5, 2, 1};
+	private final int[] initVal = new int[]{50, 1, 3};
+	private final int[] endVal = new int[]{150, 10, 30};
+	private final int[] step = new int[]{5, 1, 2};
 	
 	
 	public RFTuner(){
@@ -38,9 +42,19 @@ public class RFTuner implements ModelTuner {
 				currentOptions[2*i + 1] = String.valueOf(currentOptValue);
 				double currentAvgError = 0.d;
 				for(int c=0; c<testPair.length; c++){
+					String[] currentOptionsClone = currentOptions.clone();
+					if(i>=1){ // is using -K
+						//get number of attributes
+						ArffLoader testLoader=new ArffLoader();
+						URL url=WekaModelBuilder.class.getClassLoader().getResource(testPair[c].getTestFilePath());
+						testLoader.setURL(url.toString());
+						Instances testInstances=testLoader.getStructure();
+						int adjustedValue = (int)(Double.parseDouble(currentOptionsClone[3]) * (0.1d * (double)testInstances.numAttributes()));
+						currentOptionsClone[3] = String.valueOf(adjustedValue); 
+					}
 					trainPath = testPair[c].getTrainFilePath();
 					testPath = testPair[c].getTestFilePath();
-					currentAvgError += WekaModelBuilder.calculateErrorForModel(classifierName, trainPath, testPath, currentOptions.clone());
+					currentAvgError += WekaModelBuilder.calculateErrorForModel(classifierName, trainPath, testPath, currentOptionsClone);
 				}
 				currentAvgError /= testPair.length;
 				
