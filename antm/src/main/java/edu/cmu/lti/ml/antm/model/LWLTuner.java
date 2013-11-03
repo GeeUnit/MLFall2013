@@ -1,6 +1,5 @@
 package edu.cmu.lti.ml.antm.model;
 
-import weka.classifiers.Classifier;
 import edu.cmu.lti.ml.antm.data.TestPair;
 
 public class LWLTuner implements ModelTuner {

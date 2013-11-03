@@ -16,7 +16,7 @@ public class TunedClassifierInfo implements Comparable<TunedClassifierInfo> {
 		return this.classifierName;
 	}
 	
-	public Double getAvgErrorName(){
+	public Double getAvgError(){
 		return this.avgError;
 	}
 	

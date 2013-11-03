@@ -117,6 +117,39 @@ public class WekaModelBuilder {
 	 * Also computes error, but now using errorRate()
 	 * 
 	 */
+	public static double calculateErrorForModel(String classifierName, TestPair pair, String[] Options, boolean outputModel) throws Exception
+    {
+		Classifier model=Classifier.forName(classifierName, Options);
+        
+        String testPath = pair.getTestFilePath();
+        String trainPath = pair.getTrainFilePath();
+		
+        URL url=WekaModelBuilder.class.getClassLoader().getResource(trainPath);
+        DataSource trainSource = new DataSource(url.getFile());
+
+        Instances trainInstances=trainSource.getDataSet();
+        trainInstances.setClassIndex(trainInstances.numAttributes()-1);
+       
+        model.buildClassifier(trainInstances);
+
+        url=WekaModelBuilder.class.getClassLoader().getResource(testPath);
+        DataSource testSource = new DataSource(url.getFile());
+
+        Instances testInstances=testSource.getDataSet();
+        testInstances.setClassIndex(testInstances.numAttributes()-1);
+       
+       
+        Evaluation eval=new Evaluation(trainInstances);
+        eval.evaluateModel(model, testInstances);
+        
+        if(outputModel){
+        	outputModel(model, pair.getDescription()+".model");
+        }
+
+        return eval.errorRate();
+		
+    }
+	
 	public static double calculateErrorForModel(String classifierName, String trainPath, String testPath, String[] Options) throws Exception
     {
            Classifier model=Classifier.forName(classifierName, Options);
@@ -318,7 +351,25 @@ public class WekaModelBuilder {
 		TunedClassifierInfo lwlModel = lwl.getTunedModel(dataSets);
 		tunedClassifiers.add(lwlModel);
 		
+		//Classifier 3: Logic Boost
+		LogitTuner logit = new LogitTuner();
+		TunedClassifierInfo logitModel = logit.getTunedModel(dataSets);
+		tunedClassifiers.add(logitModel);
 		
+		//get best classifier
+		TunedClassifierInfo bestClassifier = tunedClassifiers.poll();
+		System.out.println("best classifier is: " + bestClassifier.getClassifierName());
+		
+		//compute model for each dataset using best classifier
+		double maxError = Double.MIN_VALUE; 
+		int i=0;
+		for(TestPair tp : dataSets){
+			double error = calculateErrorForModel(bestClassifier.getClassifierName(), tp.getTrainFilePath(), tp.getTestFilePath(), bestClassifier.getTunedOptions());
+			System.out.println((i++) + ": " + error);
+			maxError = (error>maxError) ? error : maxError;
+		}
+		System.out.println("average error: " + bestClassifier.getAvgError());
+		System.out.println("max error: " + maxError);
 	}
 
 }
