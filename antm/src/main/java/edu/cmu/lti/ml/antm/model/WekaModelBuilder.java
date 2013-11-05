@@ -361,14 +361,18 @@ public class WekaModelBuilder {
 		System.out.println("best classifier is: " + bestClassifier.getClassifierName());
 		
 		//compute model for each dataset using best classifier
-		double maxError = Double.MIN_VALUE; 
+		double maxError = Double.MIN_VALUE;
+		double sumOfErrors = 0d;
 		int i=0;
 		for(TestPair tp : dataSets){
+			double baselineError=calculateErrorForModel(BASELINE_CLASSIFIER, tp.getTrainFilePath(), tp.getTestFilePath());
 			double error = calculateErrorForModel(bestClassifier.getClassifierName(), tp.getTrainFilePath(), tp.getTestFilePath(), bestClassifier.getTunedOptions());
-			System.out.println((i++) + ": " + error);
-			maxError = (error>maxError) ? error : maxError;
+			double errorRatio = error / baselineError;
+			sumOfErrors += errorRatio;
+			System.out.println((i++) + ": " + errorRatio);
+			maxError = (errorRatio>maxError) ? errorRatio : maxError;
 		}
-		System.out.println("average error: " + bestClassifier.getAvgError());
+		System.out.println("average error: " + sumOfErrors/dataSets.length);
 		System.out.println("max error: " + maxError);
 	}
 
