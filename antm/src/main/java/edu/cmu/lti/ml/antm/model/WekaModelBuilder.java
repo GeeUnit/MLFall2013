@@ -366,7 +366,7 @@ public class WekaModelBuilder {
 		int i=0;
 		for(TestPair tp : dataSets){
 			double baselineError=calculateErrorForModel(BASELINE_CLASSIFIER, tp.getTrainFilePath(), tp.getTestFilePath());
-			double error = calculateErrorForModel(bestClassifier.getClassifierName(), tp.getTrainFilePath(), tp.getTestFilePath(), bestClassifier.getTunedOptions());
+			double error = calculateErrorForModel(bestClassifier.getClassifierName(), tp, bestClassifier.getTunedOptions(), true);
 			double errorRatio = error / baselineError;
 			sumOfErrors += errorRatio;
 			System.out.println((i++) + ": " + errorRatio);
