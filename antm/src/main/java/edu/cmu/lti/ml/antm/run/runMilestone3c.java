@@ -1,6 +1,7 @@
 package edu.cmu.lti.ml.antm.run;
 
 import java.net.URL;
+import java.text.DecimalFormat;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
@@ -109,7 +110,7 @@ public class runMilestone3c {
 				new TestPair("glass","datasets/glass_train.arff", "datasets/glass_test.arff"),
 				new TestPair("heart-c","datasets/heart-c_train.arff", "datasets/heart-c_test.arff"),
 				new TestPair("hepatitis","datasets/hepatitis_train.arff", "datasets/hepatitis_test.arff"),
-				new TestPair("hypothyroid","datasets/hypothyroid_train.arff", "datasets/hypothyroid_test.arff")};
+				new TestPair("hypothyroid","datasets/hypothyroid2_train.arff", "datasets/hypothyroid2_test.arff")};
 
 		//K parameter will be added later because is dependent on dataset -> 40% of total features 
 		String[] tunedOptions = {"-I", "115", "-K", "4", "-depth", "21"}; 
@@ -148,7 +149,9 @@ public class runMilestone3c {
 		System.out.println("average error: " + sumOfErrorsTuned/dataSets.length);
 		System.out.println("max error: " + maxErrorTuned);
 		
-
+		DecimalFormat df = new DecimalFormat("#.##");
+		System.out.println("\n\nimprovement on avg error: "+df.format((sumOfErrorsUntuned-sumOfErrorsTuned)*100d/sumOfErrorsUntuned) + "%");
+		System.out.println("improvement on max error: "+df.format((maxErrorUntuned-maxErrorTuned)*100d/maxErrorUntuned) + "%");
 	}
 
 }
