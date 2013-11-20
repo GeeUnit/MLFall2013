@@ -8,6 +8,7 @@ import java.util.PriorityQueue;
 import edu.cmu.lti.ml.antm.data.TestPair;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
+import weka.classifiers.meta.MultiClassClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
@@ -153,14 +154,13 @@ public class WekaModelBuilder {
 	public static double calculateErrorForModel(String classifierName, String trainPath, String testPath, String[] Options) throws Exception
     {
            Classifier model=Classifier.forName(classifierName, Options);
-           
-          
+
            URL url=WekaModelBuilder.class.getClassLoader().getResource(trainPath);
            DataSource trainSource = new DataSource(url.getFile());
    
            Instances trainInstances=trainSource.getDataSet();
            trainInstances.setClassIndex(trainInstances.numAttributes()-1);
-          
+           
            model.buildClassifier(trainInstances);
    
            url=WekaModelBuilder.class.getClassLoader().getResource(testPath);
