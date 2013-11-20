@@ -4,16 +4,29 @@ import java.io.File;
 import java.io.FileWriter;
 import java.net.URL;
 
-import weka.classifiers.Evaluation;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.Filter;
+import weka.filters.unsupervised.instance.ReservoirSample;
 import edu.cmu.lti.ml.antm.data.TestPair;
 import edu.cmu.lti.ml.antm.model.EnsembleClassifier;
 import edu.cmu.lti.ml.antm.model.WekaModelBuilder;
 
 public class RunMilestone4b {
+	
+	public static Instances shrink(Instances instances) throws Exception
+	{
+		ReservoirSample rs=new ReservoirSample();
+		rs.setSampleSize(600);
+		rs.setInputFormat(instances);
+		
+		Instances newTrainInstances=Filter.useFilter(instances, rs);
+		newTrainInstances.setClassIndex(newTrainInstances.numAttributes() - 1);
+		return newTrainInstances;
+	}
+	
 	public static void main(String[] args) throws Exception {
 		TestPair[] dataSetsb = new TestPair[] {
 				new TestPair("anneal", "datasets/anneal_train.arff",
@@ -57,8 +70,8 @@ public class RunMilestone4b {
 						"datasets/sonar_test.arff"),
 				new TestPair("soybean", "datasets/soybean_train.arff",
 						"datasets/soybean_test.arff"),
-				//new TestPair("splice", "datasets/splice_train.arff",
-				//		"datasets/splice_test.arff"),
+				new TestPair("splice", "datasets/splice_train.arff",
+						"datasets/splice_test.arff"),
 				new TestPair("vehicle", "datasets/vehicle_train.arff",
 						"datasets/vehicle_test.arff"),
 				new TestPair("vote", "datasets/vote_train.arff",
@@ -68,7 +81,13 @@ public class RunMilestone4b {
 				new TestPair("zoo", "datasets/zoo_train.arff",
 						"datasets/zoo_test.arff") };
 
+		double sum=0D;
+		double max=0D;
+		
 		for (TestPair set : dataSetsb) {
+			
+			double errorNB=WekaModelBuilder.calculateErrorForModel("weka.classifiers.bayes.NaiveBayes", set.getTrainFilePath(), set.getTestFilePath());
+			
 			EnsembleClassifier ensemble = new EnsembleClassifier();
 
 			URL url = WekaModelBuilder.class.getClassLoader().getResource(
@@ -79,8 +98,15 @@ public class RunMilestone4b {
 					+ set.getDescription() + ".predict"));
 
 			Instances trainInstances = trainSource.getDataSet();
+			
+			int n=trainInstances.numInstances();
+			
 			trainInstances.setClassIndex(trainInstances.numAttributes() - 1);
 
+			if(set.getDescription().equals("splice"))
+			{
+				trainInstances=shrink(trainInstances);
+			}
 			ensemble.buildClassifier(trainInstances);
 
 			url = WekaModelBuilder.class.getClassLoader().getResource(
@@ -94,12 +120,35 @@ public class RunMilestone4b {
 			testInstances.setClassIndex(classIndex);
 
 			Instance current;
-
+			
+			int correct=0;
+			int count=0;
+			
 			while ((current = testLoader.getNextInstance(testInstances)) != null)
 			{
-				writer.write(ensemble.classifyInstance(current)+"\n");
+				double label=ensemble.classifyInstance(current);
+				
+				if(testInstances.attribute(classIndex).value((int)label).equals(current.stringValue(classIndex)))
+				{
+					correct++;
+				}
+					count++;
+				
+				writer.write(label+"\n");
+				
 			}
 			writer.close();
+			double accuracy=correct/(double)count;
+			double robustness=(1-accuracy)/errorNB;
+			System.out.println(robustness);
+			sum+=robustness;
+			if(robustness>max)
+			{
+				max=robustness;
+			}		
 		}
+		
+		System.out.println(sum/dataSetsb.length);
+		System.out.println(max);
 	}
 }

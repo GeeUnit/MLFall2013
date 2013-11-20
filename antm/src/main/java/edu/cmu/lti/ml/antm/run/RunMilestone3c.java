@@ -11,7 +11,7 @@ import weka.core.converters.ConverterUtils.DataSource;
 import edu.cmu.lti.ml.antm.data.TestPair;
 import edu.cmu.lti.ml.antm.model.WekaModelBuilder;
 
-public class runMilestone3c {
+public class RunMilestone3c {
 	
 	public static double calculateErrorForRF(TestPair pair, String[] Options, boolean tuneModel) throws Exception
     {
