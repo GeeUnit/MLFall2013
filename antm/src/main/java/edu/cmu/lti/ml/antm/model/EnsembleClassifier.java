@@ -21,7 +21,7 @@ public class EnsembleClassifier extends Classifier{
 		Classifier[] classifiers=new Classifier[3];
 		classifiers[0]=Classifier.forName("weka.classifiers.trees.RandomForest", new String[]{"-I","100"});
 		classifiers[1]=Classifier.forName("weka.classifiers.meta.LogitBoost", new String[]{"-P","100"});
-		classifiers[2]=Classifier.forName("weka.classifiers.meta.Dagging", new String[]{"-F", "100"});
+		classifiers[2]=Classifier.forName("weka.classifiers.meta.Dagging", new String[]{"-F", "10"});
 		this.voteEnsemble=new Vote();
 		this.voteEnsemble.setCombinationRule(new SelectedTag(Vote.AVERAGE_RULE,Vote.TAGS_RULES));
 		this.voteEnsemble.setClassifiers(classifiers);		
