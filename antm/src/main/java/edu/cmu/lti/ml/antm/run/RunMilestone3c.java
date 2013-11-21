@@ -52,10 +52,10 @@ public class RunMilestone3c {
         
         
     	if(tuneModel){
-    		outputModel(model, pair.getDescription()+"_1.model");
+    		outputModel(model, pair.getDescription()+"1.model");
     	}
     	else{
-    		outputModel(model, pair.getDescription()+"_0.model");
+    		outputModel(model, pair.getDescription()+"0.model");
     	}
         
 
