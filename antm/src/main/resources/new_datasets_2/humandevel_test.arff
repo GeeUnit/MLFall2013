@@ -1,0 +1,51 @@
+@relation humandevel-weka.filters.unsupervised.instance.RemovePercentage-P33.0-V-weka.filters.unsupervised.attribute.Remove-Rlast
+
+@attribute rank numeric
+@attribute country {Afghanistan,Albania,Algeria,Angola,Argentina,Australia,Austria,Bangladesh,Belgium,Benin,Bhutan,Bolivia,Botwswana,Brazil,Bulgaria,Burkina_Faso,Burma_(Myanmar),Burundi,Cameroon,Canada,Central_Afr_Rep,Chad,Chile,China,Colombia,Congo,Costa_Rica,Cote_dIvoire,Cuba,Czechoslovakia,Denmark,Dominican_Rep,Ecuador,Egypt,El_Salvador,Ethiopia,Finland,France,Gabon,German_Dem_Rep,Germany_Fed_R,Ghana,Greece,Guatemala,Guinea,Haiti,Honduras,Hong_Kong,Hungary,India,Indonesia,Iran,Iraq,Ireland,Israel,Italy,Jamaica,Japan,Jordan,Kampuchea,Kenya,Korea_Dem_Rep,Korea_Rep,Kuwait,Laos,Lebanon,Lesotho,Liberia,Libya,Madagascar,Malawi,Malaysia,Mali,Mauritania,Mauritius,Mexico,Mongolia,Morocco,Mozambique,Namibia,Nepal,Netherlands,New_Zealand,Nicaragua,Niger,Nigeria,Norway,Oman,Pakistan,Panama,Papua_New_Guinea,Paraguay,Peru,Philipines,Poland,Portugal,Romania,Rwanda,Saudi_Arabia,Senegal,Sierra_Leone,Singapore,Somalia,South_Africa,Spain,Sri_Lanka,Sudan,Sweden,Switzerland,Syria,Tanzania,Thailand,Togo,Trinidad_Tobago,Tunisia,Turkey,USA,USSR,Uganda,United_Arab_Emir,United_Kingdom,Uruguay,Venezuela,Viet_Nam,Yemen_Arab_Rep,Yemen_PDR,Yugoslavia,Zaire,Zambia,Zimbabwe}
+@attribute hdi numeric
+
+@data
+
+1,Niger,0.116
+2,Mali,0.143
+3,Burkina_Faso,0.15
+4,Sierra_Leone,0.15
+5,Chad,0.157
+6,Guinea,0.162
+7,Somalia,0.2
+8,Mauritania,0.208
+9,Afghanistan,0.212
+10,Benin,0.212
+11,Burundi,0.235
+12,Bhutan,0.236
+13,Mozambique,0.239
+14,Malawi,0.25
+15,Sudan,0.255
+16,Central_Afr_Rep,0.258
+17,Nepal,0.273
+18,Senegal,0.274
+19,Ethiopia,0.282
+20,Zaire,0.294
+21,Rwanda,0.304
+22,Angola,0.304
+23,Bangladesh,0.318
+24,Nigeria,0.322
+25,Yemen_Arab_Rep,0.328
+26,Liberia,0.333
+27,Togo,0.337
+28,Uganda,0.354
+29,Haiti,0.356
+30,Ghana,0.36
+31,Yemen_PDR,0.369
+32,Cote_dIvoire,0.393
+33,Congo,0.395
+34,Namibia,0.404
+35,Tanzania,0.413
+36,Pakistan,0.423
+37,India,0.439
+38,Madagascar,0.44
+39,Papua_New_Guinea,0.471
+40,Kampuchea,0.471
+41,Cameroon,0.474
+42,Kenya,0.481
+43,Zambia,0.481
