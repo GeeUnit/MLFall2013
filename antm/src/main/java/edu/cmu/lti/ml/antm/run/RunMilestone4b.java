@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.net.URL;
 
+import weka.classifiers.Classifier;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
@@ -15,18 +16,17 @@ import edu.cmu.lti.ml.antm.model.EnsembleClassifier;
 import edu.cmu.lti.ml.antm.model.WekaModelBuilder;
 
 public class RunMilestone4b {
-	
-	public static Instances shrink(Instances instances) throws Exception
-	{
-		ReservoirSample rs=new ReservoirSample();
+
+	public static Instances shrink(Instances instances) throws Exception {
+		ReservoirSample rs = new ReservoirSample();
 		rs.setSampleSize(600);
 		rs.setInputFormat(instances);
-		
-		Instances newTrainInstances=Filter.useFilter(instances, rs);
+
+		Instances newTrainInstances = Filter.useFilter(instances, rs);
 		newTrainInstances.setClassIndex(newTrainInstances.numAttributes() - 1);
 		return newTrainInstances;
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		TestPair[] dataSetsb = new TestPair[] {
 				new TestPair("anneal", "datasets/anneal_train.arff",
@@ -81,74 +81,148 @@ public class RunMilestone4b {
 				new TestPair("zoo", "datasets/zoo_train.arff",
 						"datasets/zoo_test.arff") };
 
-		double sum=0D;
-		double max=0D;
-		
+		double sum = 0D;
+		double max = 0D;
+
 		for (TestPair set : dataSetsb) {
-			
-			double errorNB=WekaModelBuilder.calculateErrorForModel("weka.classifiers.bayes.NaiveBayes", set.getTrainFilePath(), set.getTestFilePath());
-			
-			EnsembleClassifier ensemble = new EnsembleClassifier();
+
+			double errorNB = WekaModelBuilder.calculateErrorForModel(
+					"weka.classifiers.bayes.NaiveBayes",
+					set.getTrainFilePath(), set.getTestFilePath());
+
+			String[] tunedOptions = { "-I", "115", "-K", "4", "-depth", "21" };
 
 			URL url = WekaModelBuilder.class.getClassLoader().getResource(
 					set.getTrainFilePath());
 			DataSource trainSource = new DataSource(url.getFile());
 
-			FileWriter writer = new FileWriter(new File("4b/"
-					+ set.getDescription() + ".predict"));
-
 			Instances trainInstances = trainSource.getDataSet();
-			
-			int n=trainInstances.numInstances();
-			
 			trainInstances.setClassIndex(trainInstances.numAttributes() - 1);
 
-			if(set.getDescription().equals("splice"))
-			{
-				trainInstances=shrink(trainInstances);
-			}
-			ensemble.buildClassifier(trainInstances);
+			Classifier model;
 
-			url = WekaModelBuilder.class.getClassLoader().getResource(
+			// update K according to number of features in data
+			double percentageOfFeatures = Double.parseDouble(tunedOptions[3]);
+			percentageOfFeatures /= 10d;
+			int totalFeatures = trainInstances.numAttributes();
+			int usedFeatures = (int) (percentageOfFeatures * (double) totalFeatures);
+			tunedOptions[3] = String.valueOf(usedFeatures);
+			model = Classifier.forName("weka.classifiers.trees.RandomForest",
+					tunedOptions);
+
+			model.buildClassifier(trainInstances);
+
+			url = RunMilestone4a.class.getClassLoader().getResource(
 					set.getTestFilePath());
 
 			ArffLoader testLoader = new ArffLoader();
 			testLoader.setURL(url.toString());
 
 			Instances testInstances = testLoader.getStructure();
-			int classIndex=testInstances.numAttributes() - 1;
+			int classIndex = testInstances.numAttributes() - 1;
 			testInstances.setClassIndex(classIndex);
 
 			Instance current;
-			
-			int correct=0;
-			int count=0;
-			
-			while ((current = testLoader.getNextInstance(testInstances)) != null)
-			{
-				double label=ensemble.classifyInstance(current);
-				
-				if(testInstances.attribute(classIndex).value((int)label).equals(current.stringValue(classIndex)))
-				{
+
+			int correct = 0;
+			int count = 0;
+
+			FileWriter writer = new FileWriter(new File("4b/"
+					+ set.getDescription() + "0.predict"));
+
+			while ((current = testLoader.getNextInstance(testInstances)) != null) {
+				double label = model.classifyInstance(current);
+
+				if (testInstances.attribute(classIndex).value((int) label)
+						.equals(current.stringValue(classIndex))) {
 					correct++;
 				}
-					count++;
-				
-				writer.write(label+"\n");
-				
+				count++;
+
+				writer.write(label + "\n");
+
 			}
 			writer.close();
-			double accuracy=correct/(double)count;
-			double robustness=(1-accuracy)/errorNB;
+
+			double accuracy = correct / (double) count;
+			double robustness = (1 - accuracy) / errorNB;
 			System.out.println(robustness);
-			sum+=robustness;
-			if(robustness>max)
-			{
-				max=robustness;
-			}		
+			sum += robustness;
+			if (robustness > max) {
+				max = robustness;
+			}
 		}
-		
-		System.out.println(sum/dataSetsb.length);
+
+		System.out.println(sum / dataSetsb.length);
+		System.out.println(max);
+
+		System.out.println("::::::::: ENSEMBLE ::::::::::::::");
+
+		sum = 0D;
+		max = 0D;
+
+		for (TestPair set : dataSetsb) {
+
+			double errorNB = WekaModelBuilder.calculateErrorForModel(
+					"weka.classifiers.bayes.NaiveBayes",
+					set.getTrainFilePath(), set.getTestFilePath());
+
+			EnsembleClassifier ensemble = new EnsembleClassifier();
+
+			URL url = RunMilestone4b.class.getClassLoader().getResource(
+					set.getTrainFilePath());
+			DataSource trainSource = new DataSource(url.getFile());
+
+			FileWriter writer = new FileWriter(new File("4b/"
+					+ set.getDescription() + "1.predict"));
+
+			Instances trainInstances = trainSource.getDataSet();
+
+			trainInstances.setClassIndex(trainInstances.numAttributes() - 1);
+
+			if (set.getDescription().equals("splice")) {
+				trainInstances = shrink(trainInstances);
+			}
+			ensemble.buildClassifier(trainInstances);
+
+			url = RunMilestone4b.class.getClassLoader().getResource(
+					set.getTestFilePath());
+
+			ArffLoader testLoader = new ArffLoader();
+			testLoader.setURL(url.toString());
+
+			Instances testInstances = testLoader.getStructure();
+			int classIndex = testInstances.numAttributes() - 1;
+			testInstances.setClassIndex(classIndex);
+
+			Instance current;
+
+			int correct = 0;
+			int count = 0;
+
+			while ((current = testLoader.getNextInstance(testInstances)) != null) {
+				double label = ensemble.classifyInstance(current);
+
+				if (testInstances.attribute(classIndex).value((int) label)
+						.equals(current.stringValue(classIndex))) {
+					correct++;
+				}
+				count++;
+
+				writer.write(label + "\n");
+
+			}
+			writer.close();
+			double accuracy = correct / (double) count;
+			double robustness = (1 - accuracy) / errorNB;
+			System.out.println(robustness);
+			sum += robustness;
+			if (robustness > max) {
+				max = robustness;
+			}
+		}
+
+		System.out.println(sum / dataSetsb.length);
 		System.out.println(max);
 	}
 }
