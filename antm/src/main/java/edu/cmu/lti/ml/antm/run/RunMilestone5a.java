@@ -31,47 +31,57 @@ public class RunMilestone5a {
 	public static void main(String[] args) throws Exception {
 		
 
-		TestPair[] dataSetsb = new TestPair[] {
-				new TestPair("arrhythmia", "dataset5/arrhythmia_train.arff",
-						"dataset5/arrhythmia_test.arff"),
-				new TestPair("breast-w", "dataset5/breast-w_train.arff",
-						"dataset5/breast-w_test.arff"),
-				new TestPair("car", "dataset5/car_train.arff",
-						"dataset5/car_test.arff"),
-				new TestPair("cmc",	"dataset5/cmc_train.arff",
-						"dataset5/cmc_test.arff"),
-				new TestPair("credit-g", "dataset5/credit-g_train.arff",
-						"dataset5/credit-g_test.arff"),
-				new TestPair("cylinder-bands", "dataset5/cylinder-bands_train.arff",
-						"dataset5/cylinder-bands_test.arff"),
-				new TestPair("dermatology", "dataset5/dermatology_train.arff",
-						"dataset5/dermatology_test.arff"),
-				new TestPair("ecoli", "dataset5/ecoli_train.arff",
-						"dataset5/ecoli_test.arff"),
-				new TestPair("flags", "dataset5/flags_train.arff",
-						"dataset5/flags_test.arff"),
-				new TestPair("haberman", "dataset5/haberman_train.arff",
-						"dataset5/haberman_test.arff"),
-				new TestPair("heart-h", "dataset5/heart-h_train.arff",
-						"dataset5/heart-h_test.arff"),
-				new TestPair("heart-statlog", "dataset5/heart-statlog_train.arff",
-						"dataset5/heart-statlog_test.arff"),
-				new TestPair("kr-vs-kp", "dataset5/kr-vs-kp_train.arff",
-						"dataset5/kr-vs-kp_test.arff"),
-				new TestPair("liver-disorders", "dataset5/liver-disorders_train.arff",
-						"dataset5/liver-disorders_test.arff"),
-				new TestPair("mfeat-factors", "dataset5/mfeat-factors_train.arff",
-						"dataset5/mfeat-factors_test.arff"),
-				new TestPair("mfeat-fourier", "dataset5/mfeat-fourier_train.arff",
-						"dataset5/mfeat-fourier_test.arff"),
-				new TestPair("mfeat-karhunen", "dataset5/mfeat-karhunen_train.arff",
-						"dataset5/mfeat-karhunen_test.arff"),
-				new TestPair("primary-tumor", "dataset5/primary-tumor_train.arff",
-						"dataset5/primary-tumor_test.arff"),
-				new TestPair("sick", "dataset5/sick_train.arff",
-						"dataset5/sick_test.arff"),
-				new TestPair("sonar", "dataset5/sonar_train.arff",
-						"dataset5/sonar_test.arff") };				
+		TestPair[] dataSetsa = new TestPair[] {
+				new TestPair("anneal", "dataset5A_rand/anneal_train.arff",
+						"dataset5A_rand/anneal_test.arff"),
+				new TestPair("audiology", "dataset5A_rand/audiology_train.arff",
+						"dataset5A_rand/audiology_test.arff"),
+				new TestPair("autos", "dataset5A_rand/autos_train.arff",
+						"dataset5A_rand/autos_test.arff"),
+				new TestPair("balance-scale",
+						"dataset5A_rand/balance-scale_train.arff",
+						"dataset5A_rand/balance-scale_test.arff"),
+				new TestPair("breast-cancer",
+						"dataset5A_rand/breast-cancer_train.arff",
+						"dataset5A_rand/breast-cancer_test.arff"),
+				new TestPair("colic", "dataset5A_rand/colic_train.arff",
+						"dataset5A_rand/colic_test.arff"),
+				new TestPair("credit-a", "dataset5A_rand/credit-a_train.arff",
+						"dataset5A_rand/credit-a_test.arff"),
+				new TestPair("diabetes", "dataset5A_rand/diabetes_train.arff",
+						"dataset5A_rand/diabetes_test.arff"),
+				new TestPair("glass", "dataset5A_rand/glass_train.arff",
+						"dataset5A_rand/glass_test.arff"),
+				new TestPair("heart-c", "dataset5A_rand/heart-c_train.arff",
+						"dataset5A_rand/heart-c_test.arff"),
+				new TestPair("hepatitis", "dataset5A_rand/hepatitis_train.arff",
+						"dataset5A_rand/hepatitis_test.arff"),
+				new TestPair("hypothyroid2", "dataset5A_rand/hypothyroid2_train.arff",
+						"dataset5A_rand/hypothyroid2_test.arff"),
+				new TestPair("ionosphere", "dataset5A_rand/ionosphere_train.arff",
+						"dataset5A_rand/ionosphere_test.arff"),
+				new TestPair("labor", "dataset5A_rand/labor_train.arff",
+						"dataset5A_rand/labor_test.arff"),
+				new TestPair("lymph", "dataset5A_rand/lymph_train.arff",
+						"dataset5A_rand/lymph_test.arff"),
+				new TestPair("mushroom", "dataset5A_rand/mushroom_train.arff",
+						"dataset5A_rand/mushroom_test.arff"),
+				new TestPair("segment", "dataset5A_rand/segment_train.arff",
+						"dataset5A_rand/segment_test.arff"),
+				new TestPair("sonar", "dataset5A_rand/sonar_train.arff",
+						"dataset5A_rand/sonar_test.arff"),
+				new TestPair("soybean", "dataset5A_rand/soybean_train.arff",
+						"dataset5A_rand/soybean_test.arff"),
+				new TestPair("splice", "dataset5A_rand/splice_train.arff",
+						"dataset5A_rand/splice_test.arff"),
+				new TestPair("vehicle", "dataset5A_rand/vehicle_train.arff",
+						"dataset5A_rand/vehicle_test.arff"),
+				new TestPair("vote", "dataset5A_rand/vote_train.arff",
+						"dataset5A_rand/vote_test.arff"),
+				new TestPair("vowel", "dataset5A_rand/vowel_train.arff",
+						"dataset5A_rand/vowel_test.arff"),
+				new TestPair("zoo", "dataset5A_rand/zoo_train.arff",
+						"dataset5A_rand/zoo_test.arff") };				
 
 		
 
@@ -79,15 +89,13 @@ public class RunMilestone5a {
 		double sum = 0D;
 		double max = 0D;
 
-		System.out.println(":::::::::::::: RANDOM FOREST ::::::::::::::");
+		System.out.println(":::::::::::::: UNTUNED RANDOM FOREST ::::::::::::::");
 		
-		for (TestPair set : dataSetsb) {
+		for (TestPair set : dataSetsa) {
 
 			double errorNB = WekaModelBuilder.calculateErrorForModel(
 					"weka.classifiers.bayes.NaiveBayes",
 					set.getTrainFilePath(), set.getTestFilePath());
-
-			String[] tunedOptions = { "-I", "115", "-K", "4", "-depth", "21" };
 			
 			URL url = WekaModelBuilder.class.getClassLoader().getResource(
 					set.getTrainFilePath());
@@ -97,15 +105,7 @@ public class RunMilestone5a {
 			trainInstances.setClassIndex(trainInstances.numAttributes() - 1);
 
 			Classifier model;
-
-			// update K according to number of features in data
-			double percentageOfFeatures = Double.parseDouble(tunedOptions[3]);
-			percentageOfFeatures /= 10d;
-			int totalFeatures = trainInstances.numAttributes();
-			int usedFeatures = (int) (percentageOfFeatures * (double) totalFeatures);
-			tunedOptions[3] = String.valueOf(usedFeatures);
-			model = Classifier.forName("weka.classifiers.trees.RandomForest",
-					tunedOptions);
+			model = Classifier.forName("weka.classifiers.trees.RandomForest", null);
 
 			model.buildClassifier(trainInstances);
 
@@ -124,8 +124,8 @@ public class RunMilestone5a {
 			int correct = 0;
 			int count = 0;
 
-			FileWriter writer = new FileWriter(new File("5/"
-					+ set.getDescription() + "0.predict"));
+			FileWriter writer = new FileWriter(new File("5a/"
+					+ set.getDescription() + "-LB.predict"));
 
 			while ((current = testLoader.getNextInstance(testInstances)) != null) {
 				double label = model.classifyInstance(current);
@@ -150,15 +150,16 @@ public class RunMilestone5a {
 			}
 		}
 
-		System.out.println(sum / dataSetsb.length);
+		System.out.println(sum / dataSetsa.length);
 		System.out.println(max);
+		
+		
+		System.out.println("::::::::: ENSEMBLE ::::::::::::::");
 
-		System.out.println(":::::::::::::: ENSEMBLE ::::::::::::::");
-			
 		sum = 0D;
 		max = 0D;
 
-		for (TestPair set : dataSetsb) {
+		for (TestPair set : dataSetsa) {
 
 			double errorNB = WekaModelBuilder.calculateErrorForModel(
 					"weka.classifiers.bayes.NaiveBayes",
@@ -170,8 +171,8 @@ public class RunMilestone5a {
 					set.getTrainFilePath());
 			DataSource trainSource = new DataSource(url.getFile());
 
-			FileWriter writer = new FileWriter(new File("5/"
-					+ set.getDescription() + "1.predict"));
+			FileWriter writer = new FileWriter(new File("5a/"
+					+ set.getDescription() + "-L5.predict"));
 
 			Instances trainInstances = trainSource.getDataSet();
 
@@ -219,9 +220,7 @@ public class RunMilestone5a {
 			}
 		}
 
-		System.out.println(sum / dataSetsb.length);
+		System.out.println(sum / dataSetsa.length);
 		System.out.println(max);
 	}
-
-
 }
