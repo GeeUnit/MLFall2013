@@ -77,7 +77,7 @@ public class RunMilestone5b {
 				new TestPair("sick", "dataset5B_Rand/sick_train.arff",
 						"dataset5B_Rand/sick_test.arff"),
 //				new TestPair("sonar", "dataset5B_Rand/sonar_train.arff",
-//						"dataset5B_Rand/sonar_test.arff"),
+//						"dataset5B_Rand/sonar_test.arff")};
 				new TestPair("spambase", "dataset5B_Rand/spambase_train.arff",
 						"dataset5B_Rand/spambase_test.arff") };
 
@@ -85,8 +85,7 @@ public class RunMilestone5b {
 		double max = 0D;
 
 		for (TestPair set : dataSetsb) {
-	
-			System.out.println(set.getDescription());
+
 			double errorNB = WekaModelBuilder.calculateErrorForModel(
 					"weka.classifiers.bayes.NaiveBayes",
 					set.getTrainFilePath(), set.getTestFilePath());
