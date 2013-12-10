@@ -81,6 +81,9 @@ public class RunMilestone4b {
 				new TestPair("zoo", "datasets/zoo_train.arff",
 						"datasets/zoo_test.arff") };
 
+		
+		System.out.println("::::::::: TUNED RANDOM FOREST ::::::::::::::");
+		
 		double sum = 0D;
 		double max = 0D;
 
