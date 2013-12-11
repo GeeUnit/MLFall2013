@@ -25,8 +25,13 @@ public class RunCrossValidationTesting {
 
 	public static void main(String[] args) throws Exception {
 		
+		//operation selection
 		boolean runEnsemble = false;
-		boolean useDevelopmentData = false;
+		boolean runIndividualClassifier = false;
+		boolean runDataStatistics = true;
+		
+		//data selection
+		boolean useDevelopmentData = true;
 		
 		String customClassifierName = "weka.classifiers.trees.RandomForest";
 		String[] customClassifierOpts = new String[]{ "-I", "100"};
@@ -142,7 +147,7 @@ public class RunCrossValidationTesting {
 							"dataset5B_Rand/spambase_test.arff") };
 		}
 
-		if (!runEnsemble){
+		if (runIndividualClassifier){
 			System.out.println(":::::::::::::: TUNED CUSTOM CLASSIFIER ::::::::::::::");
 			System.out.println(customClassifierName);
 			System.out.println("Folds: "+folds);
@@ -156,6 +161,9 @@ public class RunCrossValidationTesting {
 				//do cross-fold cross validation
 				double sumOfBaselineError = 0d;
 				double sumOfClassifierError = 0d;
+				int FVsize=0;
+				int trainingSize=0;
+				int testingSize=0;
 				
 				for (int n = 0; n < folds; n++) {
 					
@@ -192,7 +200,9 @@ public class RunCrossValidationTesting {
 				}//end of cross-fold
 				
 				double avgErrorRate = sumOfClassifierError / sumOfBaselineError; 
-				System.out.println(avgErrorRate);
+				//System.out.println(avgErrorRate);
+				System.out.println(dataset.getDescription()+"\t"+FVsize);
+				
 				
 				sum += avgErrorRate;
 				max = avgErrorRate > max ? avgErrorRate : max;
@@ -260,6 +270,35 @@ public class RunCrossValidationTesting {
 			System.out.println(totalAvgError);
 			System.out.println(max);
 		}
+		
+		if(runDataStatistics){
+			System.out.println(":::::::::::::: DATA STATS ::::::::::::::");
+			
+			//for each data set
+			for (TestPair dataset : dataSets) {
+				
+				//create instances from train data
+				URL url = WekaModelBuilder.class.getClassLoader().getResource( dataset.getTrainFilePath() );
+				DataSource trainSource = new DataSource(url.getFile());
+				Instances trainInstances = trainSource.getDataSet();
+				trainInstances.setClassIndex(trainInstances.numAttributes() - 1);
+				
+				//create instances from test data
+				url = WekaModelBuilder.class.getClassLoader().getResource( dataset.getTestFilePath() );
+				DataSource testSource = new DataSource(url.getFile());
+				Instances testInstances = testSource.getDataSet();
+				testInstances.setClassIndex(testInstances.numAttributes() - 1);
+				
+				int FVsize = trainInstances.numAttributes() - 1;
+				int trainingSize = trainInstances.numInstances();
+				int testingSize = testInstances.numInstances();
+				
+				System.out.println(dataset.getDescription()+"\t"+trainingSize+"\t"+testingSize+"\t"+FVsize);
+				
+				
+			}//end of data set loop
+			
+		}// end of data stats
 		
 		
 		
