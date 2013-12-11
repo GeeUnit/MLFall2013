@@ -2,6 +2,7 @@ package edu.cmu.lti.ml.antm.model;
 
 
 import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
 import weka.classifiers.meta.Vote;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -39,5 +40,16 @@ public class EnsembleClassifier extends Classifier{
 	{
 		return this.voteEnsemble.classifyInstance(instance);
 	}
+	
+	
+	public double calculateError(Instances train, Instances test) throws Exception
+    {
+		this.voteEnsemble.buildClassifier(train);
+       
+        Evaluation eval=new Evaluation(train);
+        eval.evaluateModel(this.voteEnsemble, test);
+        
+        return eval.errorRate();
+    }
 
 }

@@ -28,60 +28,36 @@ public class RunCustomClassifier {
 
 	public static void main(String[] args) throws Exception {
 		
-		String customClassifierName = "weka.classifiers.meta.Dagging";
-		String[] customClassifierOpts = new String[]{"-F","10"};
+		String customClassifierName = "weka.classifiers.trees.RandomForest";
+		String[] customClassifierOpts = new String[]{ "-I", "115", "-K", "4", "-depth", "21" };
 		
 		TestPair[] dataSetsa = new TestPair[] {
-				new TestPair("anneal", "dataset5A_rand/anneal_train.arff",
-						"dataset5A_rand/anneal_test.arff"),
-				new TestPair("audiology", "dataset5A_rand/audiology_train.arff",
-						"dataset5A_rand/audiology_test.arff"),
-				new TestPair("autos", "dataset5A_rand/autos_train.arff",
-						"dataset5A_rand/autos_test.arff"),
+				new TestPair("anneal", "datasets/anneal_train.arff",
+						"datasets/anneal_test.arff"),
+				new TestPair("audiology", "datasets/audiology_train.arff",
+						"datasets/audiology_test.arff"),
+				new TestPair("autos", "datasets/autos_train.arff",
+						"datasets/autos_test.arff"),
 				new TestPair("balance-scale",
-						"dataset5A_rand/balance-scale_train.arff",
-						"dataset5A_rand/balance-scale_test.arff"),
+						"datasets/balance-scale_train.arff",
+						"datasets/balance-scale_test.arff"),
 				new TestPair("breast-cancer",
-						"dataset5A_rand/breast-cancer_train.arff",
-						"dataset5A_rand/breast-cancer_test.arff"),
-				new TestPair("colic", "dataset5A_rand/colic_train.arff",
-						"dataset5A_rand/colic_test.arff"),
-				new TestPair("credit-a", "dataset5A_rand/credit-a_train.arff",
-						"dataset5A_rand/credit-a_test.arff"),
-				new TestPair("diabetes", "dataset5A_rand/diabetes_train.arff",
-						"dataset5A_rand/diabetes_test.arff"),
-				new TestPair("glass", "dataset5A_rand/glass_train.arff",
-						"dataset5A_rand/glass_test.arff"),
-				new TestPair("heart-c", "dataset5A_rand/heart-c_train.arff",
-						"dataset5A_rand/heart-c_test.arff"),
-				new TestPair("hepatitis", "dataset5A_rand/hepatitis_train.arff",
-						"dataset5A_rand/hepatitis_test.arff"),
-				new TestPair("hypothyroid2", "dataset5A_rand/hypothyroid2_train.arff",
-						"dataset5A_rand/hypothyroid2_test.arff"),
-				new TestPair("ionosphere", "dataset5A_rand/ionosphere_train.arff",
-						"dataset5A_rand/ionosphere_test.arff"),
-				new TestPair("labor", "dataset5A_rand/labor_train.arff",
-						"dataset5A_rand/labor_test.arff"),
-				new TestPair("lymph", "dataset5A_rand/lymph_train.arff",
-						"dataset5A_rand/lymph_test.arff"),
-				new TestPair("mushroom", "dataset5A_rand/mushroom_train.arff",
-						"dataset5A_rand/mushroom_test.arff"),
-				new TestPair("segment", "dataset5A_rand/segment_train.arff",
-						"dataset5A_rand/segment_test.arff"),
-				new TestPair("sonar", "dataset5A_rand/sonar_train.arff",
-						"dataset5A_rand/sonar_test.arff"),
-				new TestPair("soybean", "dataset5A_rand/soybean_train.arff",
-						"dataset5A_rand/soybean_test.arff"),
-				new TestPair("splice", "dataset5A_rand/splice_train.arff",
-						"dataset5A_rand/splice_test.arff"),
-				new TestPair("vehicle", "dataset5A_rand/vehicle_train.arff",
-						"dataset5A_rand/vehicle_test.arff"),
-				new TestPair("vote", "dataset5A_rand/vote_train.arff",
-						"dataset5A_rand/vote_test.arff"),
-				new TestPair("vowel", "dataset5A_rand/vowel_train.arff",
-						"dataset5A_rand/vowel_test.arff"),
-				new TestPair("zoo", "dataset5A_rand/zoo_train.arff",
-						"dataset5A_rand/zoo_test.arff") };				
+						"datasets/breast-cancer_train.arff",
+						"datasets/breast-cancer_test.arff"),
+				new TestPair("colic", "datasets/colic_train.arff",
+						"datasets/colic_test.arff"),
+				new TestPair("credit-a", "datasets/credit-a_train.arff",
+						"datasets/credit-a_test.arff"),
+				new TestPair("diabetes", "datasets/diabetes_train.arff",
+						"datasets/diabetes_test.arff"),
+				new TestPair("glass", "datasets/glass_train.arff",
+						"datasets/glass_test.arff"),
+				new TestPair("heart-c", "datasets/heart-c_train.arff",
+						"datasets/heart-c_test.arff"),
+				new TestPair("hepatitis", "datasets/hepatitis_train.arff",
+						"datasets/hepatitis_test.arff"),
+				new TestPair("hypothyroid2", "datasets/hypothyroid2_train.arff",
+						"datasets/hypothyroid2_test.arff") };				
 
 		
 		double sum = 0D;
@@ -101,6 +77,16 @@ public class RunCustomClassifier {
 
 			Instances trainInstances = trainSource.getDataSet();
 			trainInstances.setClassIndex(trainInstances.numAttributes() - 1);
+			
+			//update opts K value for random forest according to number of features in data
+			if(customClassifierName == "weka.classifiers.trees.RandomForest" && customClassifierOpts.length == 6){
+	        	double percentageOfFeatures = Double.parseDouble(customClassifierOpts[3]);
+	        	percentageOfFeatures /= 10d;
+	        	int totalFeatures = trainInstances.numAttributes();
+	        	int usedFeatures = (int) (percentageOfFeatures*(double)totalFeatures);
+	        	customClassifierOpts[3] = String.valueOf(usedFeatures);
+			}
+			
 
 			Classifier model;
 			model = Classifier.forName(customClassifierName, customClassifierOpts);

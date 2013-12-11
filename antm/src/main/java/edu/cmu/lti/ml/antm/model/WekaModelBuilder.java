@@ -183,6 +183,18 @@ public class WekaModelBuilder {
            return calculateErrorForModel(classifierName, trainPath, testPath, null);
     }
 	
+	//Version for instances
+	public static double calculateErrorForModel(String classifierName, Instances train, Instances test, String[] Options) throws Exception
+    {
+		Classifier model=Classifier.forName(classifierName, Options);       
+        model.buildClassifier(train);
+       
+        Evaluation eval=new Evaluation(train);
+        eval.evaluateModel(model, test);
+        
+        return eval.errorRate();
+    }
+	
 	/*
 	 * Runs the train/test for a given classifier with a range of options
 	 * and returns the best set of parameters
